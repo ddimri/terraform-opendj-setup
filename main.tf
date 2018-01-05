@@ -68,11 +68,6 @@ resource "aws_security_group" "opendj-source-ami-sg" {
   }
 }
 
-resource "aws_key_pair" "auth" {
-  key_name   = "${var.key_name}"
-  public_key = "${file(var.public_key_path)}"
-}
-
 
 # create ec2 instance for opendj source ami
 resource "aws_instance" "opendj-source-ami-server" {
@@ -108,8 +103,8 @@ resource "aws_eip" "opendj-source-ami-eip" {
     user                = "ubuntu"
     timeout = "3m"
     agent = false
-    #private_key         = "${file(var.private_key)}"
-    key_name = "${aws_key_pair.auth.id}"
+    private_key         = "${file(var.private_key)}"
+    #key_name = "${aws_key_pair.auth.id}"
   }
   provisioner "file" {
     source      = "./${var.ansible-playbook}"
