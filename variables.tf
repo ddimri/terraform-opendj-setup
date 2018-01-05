@@ -30,4 +30,4 @@ variable "availability_zones" {
 
 variable "public_key_path" {}
 
-variable "opendj-master" {}
+variable "opendj_server_name" {}
