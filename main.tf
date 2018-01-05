@@ -102,7 +102,8 @@ resource "aws_eip" "opendj-source-ami-eip" {
     user                = "ubuntu"
     timeout = "3m"
     agent = false
-    private_key         = "${file(var.private_key)}"
+    #private_key         = "${file(var.private_key)}"
+    key_name = "${aws_key_pair.auth.id}"
   }
   provisioner "file" {
     source      = "./${var.ansible-playbook}"
