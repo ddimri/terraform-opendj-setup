@@ -68,6 +68,12 @@ resource "aws_security_group" "opendj-source-ami-sg" {
   }
 }
 
+resource "aws_key_pair" "auth" {
+  key_name   = "${var.key_name}"
+  public_key = "${file(var.public_key_path)}"
+}
+
+
 # create ec2 instance for opendj source ami
 resource "aws_instance" "opendj-source-ami-server" {
   ami = "${var.base_ami}"
