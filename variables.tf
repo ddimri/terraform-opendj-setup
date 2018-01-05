@@ -27,3 +27,5 @@ variable "ansible-playbook" {}
 variable "availability_zones" {
   type        = "list"
 }
+
+variable "public_key_path" {}
