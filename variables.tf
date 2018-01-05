@@ -29,5 +29,3 @@ variable "availability_zones" {
 }
 
 variable "public_key_path" {}
-
-variable "opendj_server_name" {}
