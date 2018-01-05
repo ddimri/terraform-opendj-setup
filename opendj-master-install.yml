@@ -4,7 +4,7 @@
    connection: local
    become: true
    vars:
-    opendj_password: xxxxxxxxxx
+    opendj_password: xxxxxxxxx
    tasks:
     - name: create ans-opendj-replication directory
       file: path=/home/ubuntu/ans-opendj-replication state=directory
@@ -13,14 +13,14 @@
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/ans-opendj-replication /home/ubuntu/ans-opendj-replication"
       become_user: ubuntu
     - name: apt-get update
-      command: sudo apt-get update -y
+      command:  apt-get update -y
     - name: install jre
-      command: sudo apt-get install default-jre -y
+      command:  apt-get install default-jre -y
     - name: get opendj 3.0.0 binary
       command: "aws --region us-west-2 s3 cp s3://opendj-ldap-source-ami-files/opendj-3.0.0/OpenDJ-3.0.0.zip /opt"
       ignore_errors: True
     - name: unzip binaries
-      command: chdir=/opt sudo unzip  -o /opt/OpenDJ-3.0.0.zip
+      command: chdir=/opt  unzip  -o /opt/OpenDJ-3.0.0.zip
     - name: install opendj
       command: /opt/opendj/setup --cli --ldapPort 389 --adminConnectorPort 4444 --rootUserDN "cn=Directory Manager" --rootUserPassword {{opendj_password}} -a --hostname {{ansible_hostname}}.us-west-2.compute.internal --enableStartTLS --ldapsPort 636 --generateSelfSignedCertificate --noPropertiesFile --acceptLicense --no-prompt --baseDN dc=fireeye,dc=com
       ignore_errors: True
@@ -29,42 +29,42 @@
     - name: copy key store file
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/config /opt/opendj/config"
     - name: mkdir certs
-      command: sudo mkdir /opt/opendj/certs
+      command:  mkdir /opt/opendj/certs
     - name: copy certs
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/certs /opt/opendj/certs"
     - name: copy http-config.json
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/config/http-condig.json /opt/opendj/config"
     - name: restart the DS
-      command: sudo /opt/opendj/bin/stop-ds -R
+      command:  /opt/opendj/bin/stop-ds -R
     - name: enable HTTP connection handler
-      command: sudo /opt/opendj/bin/dsconfig  set-connection-handler-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --handler-name "HTTP Connection Handler" --set use-ssl:true --set listen-port:8443 --no-prompt  --trustAll
+      command:  /opt/opendj/bin/dsconfig  set-connection-handler-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --handler-name "HTTP Connection Handler" --set use-ssl:true --set listen-port:8443 --no-prompt  --trustAll
     - name: configure LDAPS connection Handler
-      command: sudo /opt/opendj/bin/dsconfig  set-connection-handler-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --handler-name "LDAPS Connection Handler" --set use-ssl:true --set listen-port:636 --set enabled:true --no-prompt  --trustAll
+      command:  /opt/opendj/bin/dsconfig  set-connection-handler-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --handler-name "LDAPS Connection Handler" --set use-ssl:true --set listen-port:636 --set enabled:true --no-prompt  --trustAll
     - name: configure unique plug-in
-      command: sudo /opt/opendj/bin/dsconfig create-plugin --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --plugin-name "UID Unique Attribute" --type unique-attribute --set enabled:true  --set type:ldapguid --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig create-plugin --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --plugin-name "UID Unique Attribute" --type unique-attribute --set enabled:true  --set type:ldapguid --trustAll --no-prompt
       ignore_errors: True
     - name: create backend index applianceIDFireeye
-      command: sudo /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name applianceIDFireeye --backend-name userRoot --set index-type:presence --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name applianceIDFireeye --backend-name userRoot --set index-type:presence --trustAll --no-prompt
     - name: create backend index LDAPGUID
-      command: sudo /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name LDAPGUID --backend-name userRoot --set index-type:presence --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name LDAPGUID --backend-name userRoot --set index-type:presence --trustAll --no-prompt
     - name: create backend index localUserNameFireEye
-      command: sudo /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name localUserNameFireEye --backend-name userRoot --set index-type:presence --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name localUserNameFireEye --backend-name userRoot --set index-type:presence --trustAll --no-prompt
     - name: create backend index customerIDFireEye
-      command: sudo /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name customerIDFireEye --backend-name userRoot --set index-type:presence --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig create-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --index-name customerIDFireEye --backend-name userRoot --set index-type:presence --trustAll --no-prompt
     - name: delete backend index mail
-      command: sudo /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name mail  --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name mail  --trustAll --no-prompt
     - name: delete backend index member
-      command: sudo /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name member  --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name member  --trustAll --no-prompt
     - name: delete backend index telephonenumber
-      command: sudo /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name telephonenumber  --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name telephonenumber  --trustAll --no-prompt
     - name: delete backend index uniquemember
-      command: sudo /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name uniquemember  --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig delete-backend-index --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name uniquemember  --trustAll --no-prompt
     - name: configure key store
-      command: sudo /opt/opendj/bin/dsconfig set-key-manager-provider-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --provider-name JKS --set enabled:true --set key-store-file:/opt/opendj/config/opendj.keystore --set key-store-pin:{{opendj_password}} --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig set-key-manager-provider-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --provider-name JKS --set enabled:true --set key-store-file:/opt/opendj/config/opendj.keystore --set key-store-pin:{{opendj_password}} --trustAll --no-prompt
     - name: delete key store pin file
-      command: sudo /opt/opendj/bin/dsconfig set-key-manager-provider-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --provider-name JKS --set enabled:true --remove key-store-pin-file:config/keystore.pin --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig set-key-manager-provider-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --provider-name JKS --set enabled:true --remove key-store-pin-file:config/keystore.pin --trustAll --no-prompt
     - name: configure entry limit
-      command: sudo /opt/opendj/bin/dsconfig set-backend-index-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name objectClass --set index-entry-limit:50000 --trustAll --no-prompt
+      command:  /opt/opendj/bin/dsconfig set-backend-index-prop --hostname {{ansible_hostname}}.us-west-2.compute.internal  --port 4444 --bindDN "cn=Directory Manager" --bindPassword {{opendj_password}} --backend-name userRoot --index-name objectClass --set index-entry-limit:50000 --trustAll --no-prompt
     - name: performance tuning configuration
       action: lineinfile
               dest='/etc/security/limits.conf'
@@ -79,36 +79,36 @@
       ignore_errors: true
     - name: copy ldif files
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/ldif /opt/opendj/ldif"
-    - name: create ou users 
-      command: sudo /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/add-ou.ldif
+    - name: create ou users
+      command:  /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/add-ou.ldif
     - name: create helix-admin user
-      command: sudo /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/helix-admin.ldif
+      command:  /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/helix-admin.ldif
     - name: add aci to allow helix-admin password reset
-      command: sudo /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/allow-helix-admin-to-change-password.ldif
+      command:  /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/allow-helix-admin-to-change-password.ldif
     - name: add ds-privilege-name privileges for helix-admin
-      command: sudo /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/allow-ds-privilege-name.ldif 
+      command:  /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/allow-ds-privilege-name.ldif
     - name: restart the DS
-      command: sudo /opt/opendj/bin/stop-ds -R
+      command:  /opt/opendj/bin/stop-ds -R
     - name: stop ds
-      command: sudo /opt/opendj/bin/stop-ds
+      command:  /opt/opendj/bin/stop-ds
     - name: rebuild the index to get rid of degraded state message
-      command: sudo /opt/opendj/bin/rebuild-index --baseDN dc=fireeye,dc=com --rebuildAll
+      command:  /opt/opendj/bin/rebuild-index --baseDN dc=fireeye,dc=com --rebuildAll
     - name: start the ds
-      command: sudo /opt/opendj/bin/start-ds
+      command:  /opt/opendj/bin/start-ds
     - name: set rc.d script for opendj to automatically start at boot
-      command: sudo /opt/opendj/bin/create-rc-script  -f /etc/init.d/opendj -u root  
+      command:  /opt/opendj/bin/create-rc-script  -f /etc/init.d/opendj -u root
     - name: updare rc.d
       command: update-rc.d opendj defaults
     - name: copy openDJ password file
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/secured /home/ubuntu/.ssh/opendj-password.yml"
     - name: create script directory
-      command: sudo mkdir /opt/opendj/scripts
+      command:  mkdir /opt/opendj/scripts
     - name: copy scripts from s3
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/scripts /opt/opendj/scripts"
     - name: copy s3-sync-ldap-backup from s3
       command: "aws --region us-west-2 s3 sync s3://opendj-ldap-source-ami-files/scripts /root/.aws/"
     - name: map 4444 to localhost
-      command: sudo /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/admin-port-localhost.ldif
+      command:  /opt/opendj/bin/ldapmodify -h localhost -p 389 -D "cn=Directory Manager" -w {{opendj_password}} -f /opt/opendj/ldif/admin-port-localhost.ldif
     - name: add crontab entry for opendj backup
       cron:
          name: "opendj daily backup"
