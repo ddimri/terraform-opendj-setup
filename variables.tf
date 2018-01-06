@@ -22,9 +22,9 @@ variable "home_dir" {}
 
 variable "key_name" {}
 
-variable "ansible-playbook" {}
+variable "ansible_playbook" {}
 
-variable "copy-password-file" {}
+variable "copy_password_file" {}
 
 variable "availability_zones" {
   type        = "list"
