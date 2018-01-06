@@ -108,11 +108,11 @@ resource "aws_eip" "opendj-source-ami-eip" {
     #key_name = "${aws_key_pair.auth.id}"
   }
   provisioner "file" {
-    source      = "./${var.ansible-playbook}"
+    source      = "./${var.ansible_playbook}"
     destination = "/home/ubuntu/${var.ansible_playbook}"
   }
   provisioner "file" {
-    source      = "./${var.copy-password-file}"
+    source      = "./${var.copy_password_file}"
     destination = "/home/ubuntu/${var.copy_password_file}"
   }
 }
