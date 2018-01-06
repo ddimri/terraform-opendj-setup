@@ -24,6 +24,8 @@ variable "key_name" {}
 
 variable "ansible-playbook" {}
 
+variable "copy-password-file" {}
+
 variable "availability_zones" {
   type        = "list"
 }
