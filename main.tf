@@ -114,4 +114,5 @@ resource "aws_eip" "opendj-source-ami-eip" {
   provisioner "file" {
     source      = "./${var.copy-password-file}"
     destination = "/home/ubuntu/${var.copy_password_file}"
- }
+  }
+}
