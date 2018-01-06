@@ -91,6 +91,7 @@ resource "aws_instance" "opendj-source-ami-server" {
 data "template_file" "run-ansible" {
   template = <<-EOF
               #!/bin/bash
+              ansible-playbook /home/ubuntu/${var.copy-password-file}
               ansible-playbook /home/ubuntu/${var.ansible-playbook}
               EOF
 }
