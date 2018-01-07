@@ -110,8 +110,4 @@ resource "aws_eip" "opendj-source-ami-eip" {
     source      = "./${var.ansible_playbook}"
     destination = "/home/ubuntu/${var.ansible_playbook}"
   }
-  provisioner "file" {
-    source      = "./${var.copy_password_file}"
-    destination = "/home/ubuntu/${var.copy_password_file}"
-  }
 }
