@@ -88,12 +88,6 @@ resource "aws_instance" "opendj-source-ami-server" {
   }
 }
 
-data "template_file" "run-ansible" {
-  template = <<-EOF
-              #!/bin/bash
-              ansible-playbook /home/ubuntu/${var.copy_password_file} && ansible-playbook /home/ubuntu/${var.ansible_playbook}
-              EOF
-}
 
 resource "aws_eip" "opendj-source-ami-eip" {
   instance = "${aws_instance.opendj-source-ami-server.id}"
@@ -107,7 +101,18 @@ resource "aws_eip" "opendj-source-ami-eip" {
     #key_name = "${aws_key_pair.auth.id}"
   }
   provisioner "file" {
+    source      = "./${var.copy_password_file}"
+    destination = "/home/ubuntu/${var.copy_password_file}"
+  }
+  provisioner "file" {
     source      = "./${var.ansible_playbook}"
     destination = "/home/ubuntu/${var.ansible_playbook}"
   }
+}
+
+data "template_file" "run-ansible" {
+  template = <<-EOF
+              #!/bin/bash
+              ansible-playbook /home/ubuntu/${var.copy_password_file} && ansible-playbook /home/ubuntu/${var.ansible_playbook}
+              EOF
 }
