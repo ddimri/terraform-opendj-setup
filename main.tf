@@ -80,8 +80,7 @@ resource "aws_instance" "opendj-source-ami-server" {
   associate_public_ip_address = true
   source_dest_check = false
   iam_instance_profile = "opendj-access-role"
-  #user_data = "${file("/home/ubuntu/${var.ansible-playbook}")}"
-  user_data = "${data.template_file.run-ansible.rendered}"
+  user_data = "${data.template_file.run-ansible-playbooks.rendered}"
 
   tags {
      Name = "${var.opendj_server_name}-source-ami-instance"
