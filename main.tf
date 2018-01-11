@@ -111,8 +111,8 @@ resource "aws_eip" "opendj-source-ami-eip" {
 }
 
 data "template_file" "run-ansible" {
-  template = <<-EOF 
+  template =  <<-EOF
               #!/bin/bash
               ansible-playbook /home/ubuntu/${var.copy_password_file} && ansible-playbook /home/ubuntu/${var.ansible_playbook}
-             EOF
+              EOF
 }
