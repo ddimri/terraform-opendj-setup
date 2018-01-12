@@ -114,5 +114,5 @@ data "template_file" "run-ansible-playbooks" {
               #!/bin/bash
               ansible-playbook /home/ubuntu/${var.copy_password_file} && ansible-playbook /home/ubuntu/${var.ansible_playbook}
               EOF
-  #depends_on = ["file.opendj-copy-password.yml"]
+  depends_on = ["aws_eip.opendj-source-ami-eip"]
 }
