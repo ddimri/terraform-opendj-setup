@@ -106,6 +106,14 @@ resource "aws_eip" "opendj-source-ami-eip" {
     source      = "./${var.ansible_playbook}"
     destination = "/home/ubuntu/${var.ansible_playbook}"
   }
+  provisioner "file" {
+    source      = "./enable-4444-localhost.yml"
+    destination = "/home/ubuntu/enable-4444-localhost.yml"
+  }
+  provisioner "file" {
+    source      = "./disable-4444-localhost.yml"
+    destination = "/home/ubuntu/disable-4444-localhost.yml"
+  }
 }
 
 data "template_file" "run-ansible-playbooks" {
