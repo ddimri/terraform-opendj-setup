@@ -18,7 +18,7 @@ variable "instance_type" {}
 
 variable "aws_profile" {}
 
-variable "home_dir" {}
+#variable "home_dir" {}
 
 variable "key_name" {}
 
