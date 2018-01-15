@@ -1,7 +1,16 @@
+#provider "aws" {
+  #shared_credentials_file = "${var.home_dir}/.aws/credentials"
+  #profile = "${var.aws_profile}"
+  #region = "${var.aws_region}"
+#}
+
 provider "aws" {
-  shared_credentials_file = "${var.home_dir}/.aws/credentials"
   profile = "${var.aws_profile}"
   region = "${var.aws_region}"
+  assume_role {
+    role_arn = "arn:aws:iam::157065524616:role/jenkins_pipeline_build_role"
+    session_name = "jenkins-terraform-opendj"
+  }
 }
 
 # create a vpc for opendj source_ami
